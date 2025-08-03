@@ -122,7 +122,7 @@ emma_afinn <- emma_words %>%
 emma_afinn_filtered <- emma_afinn %>% filter(n > 50)
 
 ggplot(emma_afinn_filtered, aes(x = reorder(word, n), y = n)) +
-  geom_col(fill = "forestgreen") +
+  geom_col() +
   coord_flip() +
   labs(title = "Positive Words in Emma (AFINN)", x = "Word", y = "Frequency")
 
