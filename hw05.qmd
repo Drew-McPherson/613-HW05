@@ -104,8 +104,9 @@ ggplot(emma_nrc_joy_filtered, aes(x = reorder(word, n), y = n)) +
   labs(title = "Joy Words in Emma (NRC)", x = "Word", y = "Frequency")
 
 set.seed(123)
+suppressWarnings(
 wordcloud(words = emma_nrc_joy$word, freq = emma_nrc_joy$n,
-          max.words = 100, colors = brewer.pal(8, "Dark2"))
+          max.words = 100, colors = brewer.pal(8, "Dark2")))
 
 ```
 
@@ -125,10 +126,11 @@ ggplot(emma_afinn_filtered, aes(x = reorder(word, n), y = n)) +
   coord_flip() +
   labs(title = "Positive Words in Emma (AFINN)", x = "Word", y = "Frequency")
 
-set.seed(456)
-wordcloud(words = emma_afinn$word, freq = emma_afinn$n,
-          max.words = 100, colors = brewer.pal(8, "Dark2"))
 
+set.seed(456)
+suppressWarnings(
+wordcloud(words = emma_afinn$word, freq = emma_afinn$n,
+          max.words = 100, colors = brewer.pal(8, "Dark2")))
 ```
 
 1.  AFINN
@@ -148,8 +150,9 @@ ggplot(emma_bing_filtered, aes(x = reorder(word, n), y = n)) +
   labs(title = "Positive Words in Emma (BING)", x = "Word", y = "Frequency")
 
 set.seed(789)
-wordcloud(words = emma_bing$word, freq = emma_bing$n,
-          max.words = 100, colors = brewer.pal(8, "Dark2"))
+suppressWarnings(wordcloud(words = emma_bing$word, freq = emma_bing$n,
+          max.words = 200, colors = brewer.pal(8, "Dark2"))
+)
 
 
 ```
