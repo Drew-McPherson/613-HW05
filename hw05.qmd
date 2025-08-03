@@ -145,13 +145,13 @@ emma_bing <- emma_words %>%
 emma_bing_filtered <- emma_bing %>% filter(n > 50)
 
 ggplot(emma_bing_filtered, aes(x = reorder(word, n), y = n)) +
-  geom_col(fill = "goldenrod") +
+  geom_col() +
   coord_flip() +
   labs(title = "Positive Words in Emma (BING)", x = "Word", y = "Frequency")
 
 set.seed(789)
 suppressWarnings(wordcloud(words = emma_bing$word, freq = emma_bing$n,
-          max.words = 200, colors = brewer.pal(8, "Dark2"))
+          max.words = 100, colors = brewer.pal(8, "Dark2"))
 )
 
 
