@@ -62,9 +62,17 @@ Use the **`tidytext`** package and three different **sentiment lexicons** (`nrc`
 
     -   Use `unnest_tokens()` to tokenize text into individual words.
     -   Explain briefly **why we name the output column `word`** (include this as a comment in your script).
-    -   
 
-3.  **Sentiment Analysis**
+```{r}
+# We name the column `word` because sentiment lexicons also use `word` as their key, allowing for seamless joins between the lexicons and our tokenized dataset.
+emma_words <- emma_text %>%
+  unnest_tokens(word, text)
+
+head(emma_words)
+
+```
+
+1.  **Sentiment Analysis**
 
     -   Filter joy/positive words from **each** of the three sentiment lexicons:
 
@@ -78,7 +86,75 @@ Use the **`tidytext`** package and three different **sentiment lexicons** (`nrc`
         -   Filter for frequently occurring words (`n > 50`).
         -   Visualize using a **bar chart** (`ggplot2`) and a **word cloud** (`wordcloud`).
 
-4.  **Push to GitHub**
+    -   NRC
+
+```{r}
+nrc_joy <- get_sentiments("nrc") %>% filter(sentiment == "joy")
+
+emma_nrc_joy <- emma_words %>%
+  inner_join(nrc_joy, by = "word") %>%
+  count(word, sort = TRUE)
+
+emma_nrc_joy_filtered <- emma_nrc_joy %>% filter(n > 50)
+
+# Bar plot
+ggplot(emma_nrc_joy_filtered, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "skyblue") +
+  coord_flip() +
+  labs(title = "Joy Words in Emma (NRC)", x = "Word", y = "Frequency")
+
+set.seed(123)
+wordcloud(words = emma_nrc_joy$word, freq = emma_nrc_joy$n,
+          max.words = 100, colors = brewer.pal(8, "Dark2"))
+
+```
+
+-   AFINN
+
+```{r}
+afinn <- get_sentiments("afinn") %>% filter(value >= 1)
+
+emma_afinn <- emma_words %>%
+  inner_join(afinn, by = "word") %>%
+  count(word, sort = TRUE)
+
+emma_afinn_filtered <- emma_afinn %>% filter(n > 50)
+
+ggplot(emma_afinn_filtered, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "forestgreen") +
+  coord_flip() +
+  labs(title = "Positive Words in Emma (AFINN)", x = "Word", y = "Frequency")
+
+set.seed(456)
+wordcloud(words = emma_afinn$word, freq = emma_afinn$n,
+          max.words = 100, colors = brewer.pal(8, "Dark2"))
+
+```
+
+1.  AFINN
+
+```{r}
+bing_positive <- get_sentiments("bing") %>% filter(sentiment == "positive")
+
+emma_bing <- emma_words %>%
+  inner_join(bing_positive, by = "word") %>%
+  count(word, sort = TRUE)
+
+emma_bing_filtered <- emma_bing %>% filter(n > 50)
+
+ggplot(emma_bing_filtered, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "goldenrod") +
+  coord_flip() +
+  labs(title = "Positive Words in Emma (BING)", x = "Word", y = "Frequency")
+
+set.seed(789)
+wordcloud(words = emma_bing$word, freq = emma_bing$n,
+          max.words = 100, colors = brewer.pal(8, "Dark2"))
+
+
+```
+
+1.  **Push to GitHub**
 
     -   Push your complete R script (`.R` file) to a **GitHub repository**.
 
