@@ -99,7 +99,7 @@ emma_nrc_joy_filtered <- emma_nrc_joy %>% filter(n > 50)
 
 # Bar plot
 ggplot(emma_nrc_joy_filtered, aes(x = reorder(word, n), y = n)) +
-  geom_col(fill = "skyblue") +
+  geom_col() +
   coord_flip() +
   labs(title = "Joy Words in Emma (NRC)", x = "Word", y = "Frequency")
 
