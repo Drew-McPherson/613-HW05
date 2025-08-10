@@ -11,4 +11,86 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = "center",
                       fig.height = 3, fig.width = 4)
 ggplot2::theme_set(ggplot2::theme_bw() + 
                    ggplot2::theme(strip.background = ggplot2::element_rect(fill = "white")))
+```
+
+# Title: Exploring Joyful Language in Jane Austen’s Emma using tidytext
+
+# Load Libraries
+
+```{r}
+library(janeaustenr)
+library(tidytext)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(wordcloud)
+library(tidyr)
+```
+
+# Data Wrangling
+
+```{r}
+# Load data and filter for Emma
+emma_text <- austen_books() %>%
+  filter(book == "Emma") %>%
+  mutate(linenumber = row_number(),
+         chapter = cumsum(str_detect(text, regex("^chapter [\\divxlc]", ignore_case = TRUE))))
+
+head(emma_text)
+```
+
+# Tokenization
+
+```{r}
+# Tokenize into words
+# We name the column `word` because sentiment lexicons also use `word` as their key, 
+# allowing for seamless joins between the lexicons and our tokenized dataset.
+emma_words <- emma_text %>%
+  unnest_tokens(word, text)
+
+head(emma_words)
+```
+
+# NRC Joy Sentiment Analysis
+
+```{r}
+nrc_joy <- get_sentiments("nrc") %>% filter(sentiment == "joy")
+
+emma_nrc_joy <- emma_words %>%
+  inner_join(nrc_joy, by = "word") %>%
+  count(word, sort = TRUE)
+
+emma_nrc_joy_filtered <- emma_nrc_joy %>% filter(n > 50)
+
+# Bar plot
+ggplot(emma_nrc_joy_filtered, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "skyblue") +
+  coord_flip() +
+  labs(title = "Joy Words in Emma (NRC)", x = "Word", y = "Frequency")
+
+```
+# Word Cloud
+
+```{r}
+set.seed(123)
+wordcloud(words = emma_nrc_joy$word, freq = emma_nrc_joy$n,
+          max.words = 100, colors = brewer.pal(8, "Dark2"))
+```
+
+# AFINN Sentiment Analysis (positive scores ≥ 1)
+
+```{r}
+afinn <- get_sentiments("afinn") %>% filter(value >= 1)
+
+emma_afinn <- emma_words %>%
+  inner_join(afinn, by = "word") %>%
+  count(word, sort = TRUE)
+
+emma_afinn_filtered <- emma_afinn %>% filter(n > 50)
+
+ggplot(emma_afinn_filtered, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "forestgreen") +
+  coord_flip() +
+  labs(title = "Positive Words in Emma (AFINN)", x = "Word", y = "Frequency")
+```
 
